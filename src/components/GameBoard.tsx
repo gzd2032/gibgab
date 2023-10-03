@@ -21,8 +21,8 @@ export default function GameBoard({
       alignItems="center"
     >
       <Grid item>
-        <Typography variant="h4">{gameMessage}</Typography>
-        <Typography variant="h6">Turn: {activeTurn}</Typography>
+        <Typography variant="h4" sx={{ typography: { lg:'h4', sm: 'body1', xs: 'h6' } }}>{gameMessage}</Typography>
+        <Typography variant="h6" sx={{ typography: { lg:'h6', sm: 'body1', xs: 'h6' } }}>Turn: {activeTurn}</Typography>
       </Grid>
       <Grid item>
         <Box>

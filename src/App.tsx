@@ -39,7 +39,6 @@ function App() {
   const [spectators, setSpectators] = useState<Player[]>([]);
   const [delayBtn, setDelayBtn] = useState(true);
 
-
   const BOARDSIZE: number = 6;
   const highlightedSpace: number = selectedTime + Math.ceil(BOARDSIZE);
   const beforeColor: string = "#2a9d8f";
@@ -203,10 +202,21 @@ function App() {
         changeTurn={changeTurn}
         resetGame={resetGame}
         delayBtn={delayBtn}
+        btncolor={beforeColor}
       />
     );
-  }, [activeTurn, username, playerStatus, gameStatus, playerPosition, players, changeTurn, resetGame, startGame, delayBtn]);
-
+  }, [
+    activeTurn,
+    username,
+    playerStatus,
+    gameStatus,
+    playerPosition,
+    players,
+    changeTurn,
+    resetGame,
+    startGame,
+    delayBtn,
+  ]);
 
   const memoPlayer2Buttons = useMemo(() => {
     return (
@@ -221,9 +231,21 @@ function App() {
         changeTurn={changeTurn}
         resetGame={resetGame}
         delayBtn={delayBtn}
+        btncolor={afterColor}
       />
     );
-  }, [activeTurn, username, playerStatus, gameStatus, playerPosition, players, changeTurn, resetGame, startGame, delayBtn]);
+  }, [
+    activeTurn,
+    username,
+    playerStatus,
+    gameStatus,
+    playerPosition,
+    players,
+    changeTurn,
+    resetGame,
+    startGame,
+    delayBtn,
+  ]);
 
   const swapPlayer = (newPlayerID: string): void => {
     socket.emit("swap", newPlayerID, username);
@@ -245,19 +267,21 @@ function App() {
           background: "#F3F6F9",
         }}
       >
-        <Typography variant="h2">Gibgab online!</Typography>
+        <Typography sx={{ typography: { md: "h2", sm: "h4", xs: "h6" } }}>
+          Gibgab online!
+        </Typography>
         <ConnectionStatus connected={connected} />
         <Card
           sx={{
-            width: "70vw",
-            height: "50vh",
-            margin: "10px",
+            width: { lg:"60vw", xs:"95vw"},
+            height: "60vh",
+            margin: ".5em",
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
             alignContent: "center",
           }}
-        >
+          >
           {connected ? (
             <Box sx={{ display: "flex", flexDirection: "column" }}>
               {memoPlayerNames}
@@ -265,7 +289,7 @@ function App() {
                 <Box
                   sx={{
                     display: "flex",
-                    flexDirection: "row",
+                    flexDirection: { xs: "column", lg: "row" },
                     alignItems: "center",
                   }}
                 >
@@ -280,6 +304,7 @@ function App() {
                   {memoPlayer2Buttons}
                 </Box>
               </GameBoard>
+
               <Spectators
                 spectators={spectators}
                 swapPlayer={swapPlayer}

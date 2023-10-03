@@ -12,6 +12,7 @@ interface Props {
   changeTurn: () => void;
   resetGame: () => void;
   delayBtn: boolean;
+  btncolor: string;
 }
 
 const PlayersButtons = ({
@@ -25,6 +26,7 @@ const PlayersButtons = ({
   changeTurn,
   resetGame,
   delayBtn,
+  btncolor,
 }: Props): React.ReactElement => {
   const btnStyle = {
     borderRadius: "50%",
@@ -38,6 +40,7 @@ const PlayersButtons = ({
         style={btnStyle}
         onClick={startGame}
         disabled={playersName !== username}
+        sx={{backgroundColor: btncolor}}
       >
         {playersName?.slice(0, 3)}
       </Button>
@@ -54,7 +57,12 @@ const PlayersButtons = ({
 
   const PlayButton = (): React.ReactElement => {
     return (
-      <Button variant="contained" style={btnStyle} onClick={changeTurn}>
+      <Button
+        variant="contained"
+        style={btnStyle}
+        onClick={changeTurn}
+        sx={{backgroundColor: btncolor}}
+      >
         {playersName?.slice(0, 3)}
       </Button>
     );

@@ -22,7 +22,7 @@ export default function Spectators({
  
 
   return (
-    <Box>
+    <Box sx={{ padding: '.5em', display: 'flex', alignItems: 'center', flexDirection: {xs: 'column', lg: 'row'}}}>
       Spectators:
       {spectators.length > 0
         ? spectators.map(
