@@ -7,14 +7,11 @@ interface Props {
 }
 
 export default function DisplayCategory({ category, getCategory, gameStatus }: Props) {
-  return gameStatus === "ready" ? (
-    <Box>
+  return (
+    <Box sx={{ textAlign: "center", padding: "1.2em" }}>
       <Box>
-        <Typography variant="body1">Category: {category} </Typography>
+        <Typography disabled={gameStatus !== "ready"} component={Button} onClick={getCategory} variant="body1">{category} </Typography>
       </Box>
-      <Box>
-        <Button onClick={getCategory}>change</Button>
-      </Box>
-    </Box>
-  ) : <></>;
+    </Box>)
+    ;
 }

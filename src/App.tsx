@@ -69,7 +69,6 @@ function App() {
     const gameStart = (msg: string): void => {
       setGameMessage(msg);
       setGameStatus("playing");
-      socket.emit("game category");
       setDelayBtn(true);
     };
 
@@ -88,6 +87,7 @@ function App() {
     const gameReady = (): void => {
       setGameMessage("Ready to Play!!");
       setGameStatus("ready");
+      setCategory("click here for a category")
     };
 
     const gameTurn = (msg: string): void => {
@@ -178,8 +178,12 @@ function App() {
   };
 
   const startGame = useCallback(() => {
-    socket.emit("game start", username, BOARDSIZE);
-  }, [username, BOARDSIZE]);
+    if(category === "click here for a category") {
+      alert("select a category");
+    } else {
+      socket.emit("game start", username, BOARDSIZE);
+    }
+  }, [username, BOARDSIZE, category]);
 
   const resetGame = useCallback(() => {
     socket.emit("game reset");
@@ -281,7 +285,7 @@ function App() {
           background: "#F3F6F9",
         }}
       >
-        <Typography sx={{ typography: { md: "h2", sm: "h4", xs: "h6" } }}>
+        <Typography sx={{ typography: { md: "h2", sm: "h5", xs: "h6" } }}>
           Gibgab online!
         </Typography>
         <ConnectionStatus connected={connected} />
@@ -298,14 +302,13 @@ function App() {
           >
           {connected ? (
             <Box sx={{ display: "flex", flexDirection: "column" }}>
-              {memoPlayerNames}
               <GameBoard gameMessage={gameMessage} activeTurn={activeTurn}>
                 <>
                 <DisplayCategory category={category} getCategory={getCategory} gameStatus={gameStatus}/>
                 <Box
                   sx={{
                     display: "flex",
-                    flexDirection: { xs: "column", lg: "row" },
+                    flexDirection: { xs: "column", sm: "row" },
                     alignItems: "center",
                   }}
                 >
@@ -321,6 +324,7 @@ function App() {
                 </Box>
                 </>
               </GameBoard>
+              {memoPlayerNames}
 
               <Spectators
                 spectators={spectators}
@@ -342,6 +346,7 @@ function App() {
             value={username}
             placeholder="Enter Username"
             style={{ margin: "10px" }}
+            inputProps={{ maxLength: 10 }}
             onChange={(e) => setUsername(e.target.value)}
           />
         ) : (

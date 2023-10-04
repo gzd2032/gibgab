@@ -116,7 +116,7 @@ describe("socket functions", () => {
       fireEvent.change(userInput, { target: { value: player1.name } });
       connectBtn.click();
     });
-    const startBtn = screen.getByRole('button', {name: /wait/i})
+    const startBtn = screen.getByRole('button', {name: player1.name.slice(0,3)})
     expect(startBtn).toBeInTheDocument();
   });
 
