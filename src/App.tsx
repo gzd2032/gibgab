@@ -17,6 +17,7 @@ import PlayerNames from "./components/PlayerNames";
 import ConnectionStatus from "./components/ConnectionStatus";
 import "./App.css";
 import PlayersButtons from "./components/PlayersButtons";
+import DisplayCategory from "./components/DisplayCategory";
 
 interface Player {
   name: string;
@@ -34,6 +35,7 @@ function App() {
   const [playerPosition, setPlayerPosition] = useState("center");
 
   const [gameStatus, setGameStatus] = useState("pending");
+  const [category, setCategory] = useState("");
 
   const [players, setPlayers] = useState<Player[]>([]);
   const [spectators, setSpectators] = useState<Player[]>([]);
@@ -67,6 +69,7 @@ function App() {
     const gameStart = (msg: string): void => {
       setGameMessage(msg);
       setGameStatus("playing");
+      socket.emit("game category");
       setDelayBtn(true);
     };
 
@@ -122,6 +125,11 @@ function App() {
       setSpectators(spectators);
     };
 
+    const loadCategory = (msg: string) => {
+      setCategory(msg)
+    };
+
+
     const gameReset = () => {
       setGameMessage("Ready to Start!");
       setGameStatus("ready");
@@ -138,6 +146,7 @@ function App() {
     socket.on("game turn", gameTurn);
     socket.on("game reset", gameReset);
     socket.on("game pending", gamePending);
+    socket.on("category", loadCategory);
     socket.on("game ready", gameReady);
 
     return () => {
@@ -150,6 +159,7 @@ function App() {
       socket.off("game turn", gameTurn);
       socket.off("game reset", gameReset);
       socket.off("game pending", gamePending);
+      socket.off("category", loadCategory);
       socket.off("game ready", gameReady);
     };
   }, [gameStatus, username, playerStatus, spectators]);
@@ -247,6 +257,10 @@ function App() {
     delayBtn,
   ]);
 
+  const getCategory = useCallback(() => {
+    socket.emit("game category");
+  }, []);
+
   const swapPlayer = (newPlayerID: string): void => {
     socket.emit("swap", newPlayerID, username);
   };
@@ -286,6 +300,8 @@ function App() {
             <Box sx={{ display: "flex", flexDirection: "column" }}>
               {memoPlayerNames}
               <GameBoard gameMessage={gameMessage} activeTurn={activeTurn}>
+                <>
+                <DisplayCategory category={category} getCategory={getCategory} gameStatus={gameStatus}/>
                 <Box
                   sx={{
                     display: "flex",
@@ -303,6 +319,7 @@ function App() {
                   />
                   {memoPlayer2Buttons}
                 </Box>
+                </>
               </GameBoard>
 
               <Spectators
