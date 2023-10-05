@@ -1,5 +1,6 @@
 import React, { useMemo } from "react";
 import { Button, Box } from "@mui/material";
+import AutorenewIcon from '@mui/icons-material/Autorenew';
 
 interface Props {
   playersName: string;
@@ -31,6 +32,7 @@ const PlayersButtons = ({
   const btnStyle = {
     borderRadius: "50%",
     height: "4em",
+    margin: ".5em",
   };
 
   const StartButton = (): React.ReactElement => {
@@ -40,7 +42,7 @@ const PlayersButtons = ({
         style={btnStyle}
         onClick={startGame}
         disabled={playersName !== username}
-        sx={{backgroundColor: btncolor}}
+        sx={{ backgroundColor: btncolor }}
       >
         {playersName?.slice(0, 3)}
       </Button>
@@ -49,8 +51,8 @@ const PlayersButtons = ({
 
   const ResetButton = (): React.ReactElement => {
     return (
-      <Button disabled={delayBtn} onClick={resetGame}>
-        Rematch
+      <Button variant="outlined" style={btnStyle} disabled={delayBtn} onClick={resetGame}>
+        <AutorenewIcon />
       </Button>
     );
   };
@@ -61,7 +63,7 @@ const PlayersButtons = ({
         variant="contained"
         style={btnStyle}
         onClick={changeTurn}
-        sx={{backgroundColor: btncolor}}
+        sx={{ backgroundColor: btncolor }}
       >
         {playersName?.slice(0, 3)}
       </Button>

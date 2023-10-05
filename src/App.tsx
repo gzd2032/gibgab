@@ -1,13 +1,5 @@
-import React, { useMemo, useState, useEffect, useCallback } from "react";
-import {
-  Button,
-  TextField,
-  Typography,
-  ButtonGroup,
-  Card,
-  Box,
-  CssBaseline,
-} from "@mui/material";
+import { useMemo, useState, useEffect, useCallback } from "react";
+import { Typography, Card, Box, CssBaseline, Stack } from "@mui/material";
 import { socket } from "./socket/socket";
 
 import GameBoard from "./components/GameBoard";
@@ -18,6 +10,7 @@ import ConnectionStatus from "./components/ConnectionStatus";
 import "./App.css";
 import PlayersButtons from "./components/PlayersButtons";
 import DisplayCategory from "./components/DisplayCategory";
+import ConnectionButtons from "./components/ConnectionButtons";
 
 interface Player {
   name: string;
@@ -30,7 +23,7 @@ function App() {
   const [selectedTime, setSelectedTime] = useState(0);
   const [gameMessage, setGameMessage] = useState("");
 
-  const [activeTurn, setActiveTurn] = useState("");
+  const [subMessage, setSubMessage] = useState("");
   const [playerStatus, setPlayerStatus] = useState(false);
   const [playerPosition, setPlayerPosition] = useState("center");
 
@@ -87,20 +80,20 @@ function App() {
     const gameReady = (): void => {
       setGameMessage("Ready to Play!!");
       setGameStatus("ready");
-      setCategory("click here for a category")
+      setCategory("click here for a category");
     };
 
-    const gameTurn = (msg: string): void => {
-      setActiveTurn(msg);
+    const gameSubMessage = (msg: string): void => {
+      setSubMessage(msg);
     };
 
     const gameEnd = (msg: string): void => {
       setGameMessage(msg);
       setGameStatus("end");
-      setActiveTurn("");
+      setSubMessage("");
       setTimeout((): void => {
         setDelayBtn(false);
-      }, 3000);
+      }, 2000);
     };
 
     const loadPlayers = (players: Player[]): void => {
@@ -126,15 +119,14 @@ function App() {
     };
 
     const loadCategory = (msg: string) => {
-      setCategory(msg)
+      setCategory(msg);
     };
-
 
     const gameReset = () => {
       setGameMessage("Ready to Start!");
       setGameStatus("ready");
       setSelectedTime(0);
-      setActiveTurn("");
+      setSubMessage("");
     };
 
     socket.on("game start", gameStart);
@@ -143,7 +135,7 @@ function App() {
     socket.on("players", loadPlayers);
     socket.on("spectators", loadSpectators);
     socket.on("game end", gameEnd);
-    socket.on("game turn", gameTurn);
+    socket.on("game submessage", gameSubMessage);
     socket.on("game reset", gameReset);
     socket.on("game pending", gamePending);
     socket.on("category", loadCategory);
@@ -156,7 +148,7 @@ function App() {
       socket.off("players", loadPlayers);
       socket.off("spectators", loadSpectators);
       socket.off("game end", gameEnd);
-      socket.off("game turn", gameTurn);
+      socket.off("game submessage", gameSubMessage);
       socket.off("game reset", gameReset);
       socket.off("game pending", gamePending);
       socket.off("category", loadCategory);
@@ -178,7 +170,7 @@ function App() {
   };
 
   const startGame = useCallback(() => {
-    if(category === "click here for a category") {
+    if (category === "click here for a category") {
       alert("select a category");
     } else {
       socket.emit("game start", username, BOARDSIZE);
@@ -207,7 +199,7 @@ function App() {
     return (
       <PlayersButtons
         playersName={players[0]?.name}
-        isTurn={activeTurn !== username}
+        isTurn={subMessage !== username}
         username={username}
         playerStatus={playerStatus}
         gameStatus={gameStatus}
@@ -220,7 +212,7 @@ function App() {
       />
     );
   }, [
-    activeTurn,
+    subMessage,
     username,
     playerStatus,
     gameStatus,
@@ -236,7 +228,7 @@ function App() {
     return (
       <PlayersButtons
         playersName={players[1]?.name}
-        isTurn={activeTurn !== username}
+        isTurn={subMessage !== username}
         playerStatus={playerStatus}
         username={username}
         gameStatus={gameStatus}
@@ -249,7 +241,7 @@ function App() {
       />
     );
   }, [
-    activeTurn,
+    subMessage,
     username,
     playerStatus,
     gameStatus,
@@ -285,47 +277,59 @@ function App() {
           background: "#F3F6F9",
         }}
       >
-        <Typography sx={{ typography: { md: "h2", sm: "h5", xs: "h6" } }}>
-          Gibgab online!
-        </Typography>
-        <ConnectionStatus connected={connected} />
+        <Stack direction="row" spacing={1} alignItems="center">
+          <ConnectionButtons
+            connected={connected}
+            username={username}
+            disconnect={disconnect}
+            connect={connect}
+            setUsername={setUsername}
+          />
+          {connected && <Typography variant="h6">Gibgab online!</Typography>}
+        </Stack>
+        <ConnectionStatus connected={connected} username={username} />
         <Card
           sx={{
-            width: { lg:"60vw", xs:"95vw"},
-            height: "60vh",
+            width: { lg: "60vw", xs: "95vw" },
+            minHeight: { lg: "40vh", xs: "30vh" },
             margin: ".5em",
             display: "flex",
+            padding: "1em",
             justifyContent: "center",
             alignItems: "center",
             alignContent: "center",
           }}
-          >
+        >
           {connected ? (
             <Box sx={{ display: "flex", flexDirection: "column" }}>
-              <GameBoard gameMessage={gameMessage} activeTurn={activeTurn}>
+              <GameBoard gameMessage={gameMessage} subMessage={subMessage}>
                 <>
-                <DisplayCategory category={category} getCategory={getCategory} gameStatus={gameStatus}/>
-                <Box
-                  sx={{
-                    display: "flex",
-                    flexDirection: { xs: "column", sm: "row" },
-                    alignItems: "center",
-                  }}
-                >
-                  {memoPlayer1Buttons}
-                  <GameLights
-                    BOARDSIZE={BOARDSIZE}
-                    highlightedSpace={highlightedSpace}
-                    afterColor={afterColor}
-                    beforeColor={beforeColor}
-                    highlightColor={highlightColor}
+                  <DisplayCategory
+                    category={category}
+                    getCategory={getCategory}
+                    gameStatus={gameStatus}
+                    playerStatus={playerStatus}
                   />
-                  {memoPlayer2Buttons}
-                </Box>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      flexDirection: { xs: "column", sm: "row" },
+                      alignItems: "center",
+                    }}
+                  >
+                    {memoPlayer1Buttons}
+                    <GameLights
+                      BOARDSIZE={BOARDSIZE}
+                      highlightedSpace={highlightedSpace}
+                      afterColor={afterColor}
+                      beforeColor={beforeColor}
+                      highlightColor={highlightColor}
+                    />
+                    {memoPlayer2Buttons}
+                  </Box>
                 </>
               </GameBoard>
               {memoPlayerNames}
-
               <Spectators
                 spectators={spectators}
                 swapPlayer={swapPlayer}
@@ -337,36 +341,6 @@ function App() {
             "not connected to server"
           )}
         </Card>
-
-        {!connected ? (
-          <TextField
-            id="username"
-            label="username"
-            variant="outlined"
-            value={username}
-            placeholder="Enter Username"
-            style={{ margin: "10px" }}
-            inputProps={{ maxLength: 10 }}
-            onChange={(e) => setUsername(e.target.value)}
-          />
-        ) : (
-          <Typography variant="h6">User: {username}</Typography>
-        )}
-
-        <ButtonGroup
-          variant="contained"
-          aria-label="outlined primary button group"
-        >
-          <Button
-            disabled={connected ? true : false}
-            onClick={() => connect(username)}
-          >
-            Connect
-          </Button>
-          <Button disabled={!connected ? true : false} onClick={disconnect}>
-            Disconnect
-          </Button>
-        </ButtonGroup>
       </Box>
     </>
   );

@@ -4,13 +4,14 @@ interface Props {
   category: string;
   getCategory: () => void;
   gameStatus: string;
+  playerStatus: boolean;
 }
 
-export default function DisplayCategory({ category, getCategory, gameStatus }: Props) {
+export default function DisplayCategory({ category, getCategory, gameStatus, playerStatus }: Props) {
   return (
-    <Box sx={{ textAlign: "center", padding: "1.2em" }}>
+    <Box sx={{ textAlign: "center", padding: ".5em" }}>
       <Box>
-        <Typography disabled={gameStatus !== "ready"} component={Button} onClick={getCategory} variant="body1">{category} </Typography>
+        <Typography disabled={!playerStatus || gameStatus !== "ready"} component={Button} onClick={getCategory} variant="body1">{category} </Typography>
       </Box>
     </Box>)
     ;
