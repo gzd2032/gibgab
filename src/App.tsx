@@ -129,6 +129,10 @@ function App() {
       setSubMessage("");
     };
 
+    const gameSpeed = (msg: string) => {
+      setGameSpeed(msg)
+    }
+
     socket.on("game start", gameStart);
     socket.on("game", gameAction);
     socket.on("game tick", gameTick);
@@ -137,6 +141,7 @@ function App() {
     socket.on("game end", gameEnd);
     socket.on("game submessage", gameSubMessage);
     socket.on("game reset", gameReset);
+    socket.on("game speed", gameSpeed);
     socket.on("game pending", gamePending);
     socket.on("category", loadCategory);
     socket.on("game ready", gameReady);
@@ -148,6 +153,7 @@ function App() {
       socket.off("players", loadPlayers);
       socket.off("spectators", loadSpectators);
       socket.off("game end", gameEnd);
+      socket.off("game speed", gameSpeed);
       socket.off("game submessage", gameSubMessage);
       socket.off("game reset", gameReset);
       socket.off("game pending", gamePending);
@@ -262,12 +268,12 @@ function App() {
   };
 
   const changeSpeed = (): void => {
-    setGameSpeed(prev => {
-      let newSpeed = 'low';
-      if (prev === 'med') newSpeed = 'high'
-      if (prev === 'low') newSpeed = 'med'
-      return newSpeed;
-    } )
+    const speed: { [n: string]: string} = {
+      "low": "med",
+      "med": "high",
+      "high":"low"
+    }
+    socket.emit("game speed", speed[gameSpeed])
   }
 
   return (
@@ -311,7 +317,7 @@ function App() {
         >
           {connected ? (
             <Box sx={{ display: "flex", flexDirection: "column" }}>
-              <GameBoard gameSpeed={gameSpeed} changeSpeed={changeSpeed} gameMessage={gameMessage} subMessage={subMessage}>
+              <GameBoard gameSpeed={gameSpeed} changeSpeed={changeSpeed} gameStatus={gameStatus} gameMessage={gameMessage} subMessage={subMessage}>
                 <>
                   <DisplayCategory
                     category={category}

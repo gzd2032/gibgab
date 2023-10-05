@@ -6,6 +6,7 @@ interface Props {
   changeSpeed: () => void;
   gameMessage: string;
   subMessage: string;
+  gameStatus: string;
   children: React.ReactElement;
 }
 
@@ -14,6 +15,7 @@ export default function GameBoard({
   changeSpeed,
   gameMessage,
   subMessage,
+  gameStatus,
   children,
 }: Props): ReactElement {
 
@@ -21,7 +23,7 @@ export default function GameBoard({
 
   return (
     <Box>
-      <Button onClick={changeSpeed} sx={{ }}>{gameSpeed}</Button>
+      <Button disabled={gameStatus !== 'ready' } onClick={changeSpeed} sx={{ }}>{gameSpeed}</Button>
       <Stack direction="column" spacing={0} alignItems="center">
         <Typography
           variant="h4"
