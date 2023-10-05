@@ -7,10 +7,10 @@ import GameLights from "./components/GameLights";
 import Spectators from "./components/Spectators";
 import PlayerNames from "./components/PlayerNames";
 import ConnectionStatus from "./components/ConnectionStatus";
-import "./App.css";
 import PlayersButtons from "./components/PlayersButtons";
 import DisplayCategory from "./components/DisplayCategory";
 import ConnectionButtons from "./components/ConnectionButtons";
+import "./App.css";
 
 interface Player {
   name: string;
@@ -26,7 +26,7 @@ function App() {
   const [subMessage, setSubMessage] = useState("");
   const [playerStatus, setPlayerStatus] = useState(false);
   const [playerPosition, setPlayerPosition] = useState("center");
-
+  const [gameSpeed, setGameSpeed] = useState("med");
   const [gameStatus, setGameStatus] = useState("pending");
   const [category, setCategory] = useState("");
 
@@ -261,6 +261,15 @@ function App() {
     socket.emit("swap", newPlayerID, username);
   };
 
+  const changeSpeed = (): void => {
+    setGameSpeed(prev => {
+      let newSpeed = 'low';
+      if (prev === 'med') newSpeed = 'high'
+      if (prev === 'low') newSpeed = 'med'
+      return newSpeed;
+    } )
+  }
+
   return (
     <>
       <CssBaseline />
@@ -302,7 +311,7 @@ function App() {
         >
           {connected ? (
             <Box sx={{ display: "flex", flexDirection: "column" }}>
-              <GameBoard gameMessage={gameMessage} subMessage={subMessage}>
+              <GameBoard gameSpeed={gameSpeed} changeSpeed={changeSpeed} gameMessage={gameMessage} subMessage={subMessage}>
                 <>
                   <DisplayCategory
                     category={category}
